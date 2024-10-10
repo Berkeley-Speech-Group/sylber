@@ -1,3 +1,5 @@
 # SYLBER: Syllabic Embedding Representation of Speech from Raw Audio
 
-[Paper](https://github.com/Berkeley-Speech-Group/sylber) | [Project Page](https://berkeley-speech-group.github.io/sylber)
+[Paper](https://arxiv.org/abs/2410.07168) | [Audio Samples](https://berkeley-speech-group.github.io/sylber)
+
+**Code coming soon!**
