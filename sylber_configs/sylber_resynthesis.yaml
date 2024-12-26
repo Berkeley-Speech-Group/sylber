@@ -1,0 +1,23 @@
+input_configs:
+  output_dim: 256
+  hidden_dims:
+    - 512
+    - 512
+  dropout: 0.05
+
+regressor_configs:
+  depth: 8
+  sigma: 0.0
+  dim_head: 64
+  heads: 8
+  dim: 512
+  dim_in_proj: 64
+  dim_cond_emb: 256
+
+thresholder_configs:
+  signal_mean: 6.10
+  signal_var: 0.87
+  noise_mean: 0.3879
+  noise_var: 0.6819
+
+segment_online: true

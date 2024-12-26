@@ -1,0 +1,56 @@
+name: sylber_base_stage2
+model:
+  speech_upstream: "facebook/hubert-base-ls960"
+  ema_decay: 1.0
+  encoding_layer: 9
+  do_noise_augment: true
+  noise_mixer_configs:
+    augment_prob: 0.2
+    utterance_mix_ratio: 0.25
+    shift_range: [0.0,0.7]
+    magnitude_range: [0.05,0.7]
+    utterance_magnitude_max_scale: 0.2
+  mask_prob: 0.0
+  min_mask_n: 0
+  segment_online: true
+  merge_threshold_range: [0.8, 0.9]
+  thresholder_configs:
+    signal_mean: 6.10
+    signal_var: 0.87
+    noise_mean: 0.34
+    noise_var: 0.34
+  use_train_thrupdate: true
+  ema_ckpt: null
+  lr: 0.00005
+  warmup_steps: 0
+  hold_steps: 0
+  total_steps: 50000
+  min_factor: 1
+  loss_coefs:
+    distillation_loss: 1
+    lm_loss: 0
+data:
+  data_dir: null
+  train_files: 
+    - [1.0, /data/common/sdhubert_tokenization/quantized_files/librispeech_train.txt]
+  val_files:
+    - [1.0, /data/common/sdhubert_tokenization/quantized_files/librispeech_dev.txt]
+  test_files:
+    - [1.0, /data/common/sdhubert_tokenization/quantized_files/librispeech_test.txt]
+  wav_dirs:
+    - /data/common/all_wavs/
+  noise_dir: /home/cheoljun/noise_fullband_16k/
+  batch_size: 100
+  val_batch_size: 32
+  max_len: 80000
+  num_workers: 16
+checkpoint_epoch: 1
+max_steps: 100000
+limit_val_batches: 100
+speech_model_ckpt: null
+model_ckpt: ???
+resume_ckpt: null
+check_val_every_n_epoch: 1
+val_check_interval: null
+accumulate_grad_batches: 1
+gpus: '0'
