@@ -1,0 +1,47 @@
+name: sylber_base
+model:
+  speech_upstream: "facebook/hubert-base-ls960"
+  ema_decay: 1.0
+  encoding_layer: 9
+  mask_prob: 0.0
+  do_noise_augment: true
+  min_mask_n: 0
+  noise_mixer_configs:
+    augment_prob: 0.2
+    utterance_mix_ratio: 0.25
+    shift_range: [0.0,0.7]
+    magnitude_range: [0.05,0.7]
+    utterance_magnitude_max_scale: 0.2
+  segment_online: false
+  lr: 0.0001
+  warmup_steps: 500
+  total_steps: 200000
+  min_factor: 1
+  loss_coefs:
+    distillation_loss: 1  
+    lm_loss: 0
+data:
+  data_dir: INITIAL_SEGMENT_DIR
+  train_files: 
+    - [1.0, MANIFEST_DIR/librispeech_train.txt]
+  val_files:
+    - [1.0, MANIFEST_DIR/librispeech_dev.txt]
+  test_files:
+    - [1.0, MANIFEST_DIR/librispeech_test.txt]
+  wav_dirs:
+    - WAV_DATA_ROOT
+  noise_dir: NOISE_DIR
+  batch_size: 100
+  val_batch_size: 32
+  max_len: 80000
+  num_workers: 16
+checkpoint_epoch: 1
+max_steps: 200000
+limit_val_batches: 100
+speech_model_ckpt: SDHUBERT_CHECKPOINT
+model_ckpt: null
+resume_ckpt: null
+check_val_every_n_epoch: 1
+val_check_interval: null
+accumulate_grad_batches: 1
+gpus: '0'
