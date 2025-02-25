@@ -28,7 +28,7 @@ pip install -r requirements.txt
 
 2. **Generated Datasets**: The other data used for training SYLBER are generated using the [SDHuBERT repository](https://github.com/cheoljun95/sdhubert). Please follow the instructions there for data preparation.
 
-3. **Checkpoints**: Pretrained model checkpoints for sylber are available on Google Drive: [linik](https://drive.google.com/drive/folders/1Savigp6jnLKIAZ-6nwKkIwJ8Us1CkG5e?usp=sharing)
+3. **Checkpoints**: Pretrained model checkpoints for sylber are available on Google Drive: [link](https://drive.google.com/drive/folders/1Savigp6jnLKIAZ-6nwKkIwJ8Us1CkG5e?usp=sharing)
 
 ### Stage 1 Training
 ```bash
