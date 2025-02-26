@@ -50,24 +50,74 @@ class Segmenter():
         self.norm_threshold = norm_threshold
         self.merge_threshold=merge_threshold
 
-    def __call__(self,wav_file):
+    def __call__(self, wav_file):
         """
-        """        
-        wav,_ = torchaudio.load(wav_file)
-        wav = (wav-wav.mean())/wav.std()
-        wav = wav.to(self.device)
+        Process single wav file or a list of wav files through the model
+        
+        Args:
+            wav_file: Path to a single wav file or a list of wav file paths
+            
+        Returns:
+            For single file: Dictionary with segments and segment_features
+            For multiple files: List of dictionaries, each with segments and segment_features
+        """
+        is_batch = isinstance(wav_file, list)
+        wav_files = wav_file if is_batch else [wav_file]
+        
+        # Load and preprocess all wav files
+        batch_wavs = []
+        orig_lengths = []
+        max_length = 0
+        
+        for file in wav_files:
+            wav, sr = torchaudio.load(file)
+            if sr != 16000:
+                wav = torchaudio.transforms.Resample(sr, 16000)(wav)
+            wav = (wav - wav.mean()) / wav.std()
+            orig_lengths.append(wav.shape[1])
+            batch_wavs.append(wav)
+            max_length = max(max_length, wav.shape[1])
+        
+        # Pad wavs to the same size
+        padded_wavs = []
+        attention_masks = []
+        
+        for wav, _ in zip(batch_wavs, orig_lengths):
+            padding = max_length - wav.shape[1]
+            if padding > 0:
+                padded_wav = torch.nn.functional.pad(wav, (0, padding))
+                # Create attention mask (1 for real data, 0 for padding)
+                attention_mask = torch.ones(wav.shape[1], dtype=torch.long)
+                attention_mask = torch.nn.functional.pad(attention_mask, (0, padding), value=0)
+            else:
+                padded_wav = wav
+                attention_mask = torch.ones(wav.shape[1], dtype=torch.long)
+            
+            padded_wavs.append(padded_wav)
+            attention_masks.append(attention_mask)
+        
+        batch_tensor = torch.cat(padded_wavs, dim=0).to(self.device)
+        attention_mask = torch.stack(attention_masks).to(self.device)
+                
         with torch.no_grad():
-            hidden_states = self.speech_model(wav,).last_hidden_state
+            self.speech_model.eval()
+            hidden_states = self.speech_model(batch_tensor, attention_mask=attention_mask).last_hidden_state
+                    
+        # Process results serially
         hidden_states = hidden_states.cpu().numpy()
-        segments=[get_segment(states, self.norm_threshold, self.merge_threshold) for states in hidden_states]
-
-        # assuming no batch
-        segments = segments[0]
-        states = hidden_states[0]
-        outputs={'segments':segments*1.0/50,
-                 'segment_features':np.stack([states[s:e].mean(0) for s,e in segments]),
-                }
-        return outputs
+        all_segments = [get_segment(states, self.norm_threshold, self.merge_threshold) for states in hidden_states]
+        
+        outputs = []
+        for i, segments in enumerate(all_segments):
+            states = hidden_states[i]
+            result = {
+                'segments': segments * 1.0 / 50,
+                'segment_features': np.stack([states[s:e].mean(0) for s, e in segments]) if len(segments) > 0 else np.array([]),
+                'hidden_states': states
+            }
+            outputs.append(result)
+        
+        return outputs if is_batch else outputs[0]
         
 class Sylber(nn.Module):
 
