@@ -1,14 +1,11 @@
-from dataset.collective_audio_segment import SpeechDataModule
-from model.sylber import SylberTrainer
+from sylber.dataset.collective_audio_segment import SpeechDataModule
+from sylber.model.sylber import SylberTrainer
 import lightning as pl
 from lightning.pytorch.callbacks import LearningRateMonitor, ModelCheckpoint
 import hydra
 import torch
 from collections import OrderedDict
 from weakref import proxy
-
-torch.set_float32_matmul_precision('medium')
-
 
 
 class ModelCheckpointWithEMA(ModelCheckpoint):
@@ -66,16 +63,7 @@ def main(cfg):
         
     # Callbacks
     lr_monitor = LearningRateMonitor(logging_interval='step')
-
-    '''
-    # checkpoint best
-    checkpoint_callback_topk = ModelCheckpoint(
-        monitor="val_loss",
-        save_top_k=1,
-        mode="min",
-        filename='best-{epoch}-{val_loss:.2f}'
-    )
-    '''
+    
     # checkpoint every N epochs
     checkpoint_callback_by_epoch = ModelCheckpointWithEMA(
         every_n_epochs=cfg['checkpoint_epoch'],

@@ -5,9 +5,22 @@
 
 ## Updates
 
+### 03/02/2025
+1. Distribute inference package
+
 ### 12/25/2024
 1. Initial code release with training and inference pipelines.
 2. Checkpoint release
+
+## Installation
+
+The model can be installed through pypi for inference. 
+
+```
+pip install sylber
+```
+Please check [demo notebook](demo.ipynb) for the usage.
+For training, please follow the below instructions.
 
 ## Environment
 

@@ -11,10 +11,12 @@ from transformers import HubertModel, HubertConfig, BertModel, BertConfig
 from .ema_module import EMAModule
 from torch.optim.lr_scheduler import LambdaLR
 from torch.nn import init
-from utils.segment_utils import get_segment, Thresholder
-from utils.lr_schedule import COSLRLAMBDA
-from utils.noise_utils import NoiseMixer
+from ..utils.segment_utils import get_segment, Thresholder
+from ..utils.lr_schedule import COSLRLAMBDA
+from ..utils.noise_utils import NoiseMixer
+from huggingface_hub import hf_hub_download
 import torchaudio
+from pathlib import Path
 
     
 def apply_xavier_init(m):
@@ -26,7 +28,7 @@ def apply_xavier_init(m):
 class Segmenter():
 
     def __init__(self,
-                 model_ckpt=None,
+                 model_ckpt="sylber",
                  speech_upstream="facebook/hubert-base-ls960",
                  ema_decay=0.999,
                  encoding_layer = 9,
@@ -42,15 +44,23 @@ class Segmenter():
         self.encoding_layer = encoding_layer
 
         if model_ckpt is not None:
+            if model_ckpt =="sylber":
+                model_ckpt = "sylber.ckpt"
+            if not Path(model_ckpt).exists():
+                model_ckpt = hf_hub_download(repo_id="cheoljun95/sylber", filename=model_ckpt,)
             state_dict = torch.load(model_ckpt, map_location='cpu')
             self.speech_model.load_state_dict(state_dict, strict=False )
             print("Pre-trained checkpoint loaded")
         self.speech_model = self.speech_model.eval().to(device)
+        
+        if 'cuda' in device and not torch.cuda.is_available():
+            print("CUDA is not available. Setting devie as CPU.")
+            device = "cpu"
         self.device = device
         self.norm_threshold = norm_threshold
         self.merge_threshold=merge_threshold
 
-    def __call__(self, wav_file):
+    def __call__(self, wav_file, in_second=True):
         """
         Process single wav file or a list of wav files through the model
         
@@ -111,7 +121,7 @@ class Segmenter():
         for i, segments in enumerate(all_segments):
             states = hidden_states[i]
             result = {
-                'segments': segments * 1.0 / 50,
+                'segments': segments * 1.0 / 50 if in_second else segments,
                 'segment_features': np.stack([states[s:e].mean(0) for s, e in segments]) if len(segments) > 0 else np.array([]),
                 'hidden_states': states
             }

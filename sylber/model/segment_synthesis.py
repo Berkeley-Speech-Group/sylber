@@ -9,9 +9,9 @@ except:
 from transformers import HubertModel, HubertConfig
 from torch.optim.lr_scheduler import LambdaLR
 from .flowmatching import Regressor, ConditionalFlowMatcherWrapperRegressor
-from utils.segment_utils import get_segment, Thresholder
-from utils.lr_schedule import COSLRLAMBDA
-from model.quantizer import load_km_quantizer
+from ..utils.segment_utils import get_segment, Thresholder
+from ..utils.lr_schedule import COSLRLAMBDA
+from .quantizer import load_km_quantizer
 
 
 class RFF(nn.Module):

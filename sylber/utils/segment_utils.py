@@ -69,7 +69,7 @@ def cossim(x,y):
     return (x*y).sum(-1)/(((x**2).sum(-1)+1e-8)**.5)/(((y**2).sum(-1)+1e-8)**.5)
 
 
-def get_segment(states, normthreshold, mergethreshold,norms=None):
+def get_segment(states, normthreshold, mergethreshold, norms=None):
     # states: (L, d)
     if norms is None:
         norms = ((states**2).sum(-1)+1e-8)**.5
