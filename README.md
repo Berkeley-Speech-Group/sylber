@@ -2,6 +2,10 @@
 
 [Paper](https://arxiv.org/abs/2410.07168) | [Audio Samples](https://berkeley-speech-group.github.io/sylber)
 
+Sylber is the first of its kind that yields extremely short tokens from raw audio (on average, 4.27 tokens/sec) through dynamic tokenization at the syllable granularity.
+
+The model is developed and trained by Berkeley Speech Group.
+
 
 ## Updates
 
@@ -21,6 +25,27 @@ pip install sylber
 ```
 Please check [demo notebook](demo.ipynb) for the usage.
 For training, please follow the below instructions.
+
+### Usage
+
+```python
+
+from sylber import Segmenter
+
+# Loading Sylber
+segmenter = Segmenter(model_ckpt="sylber")
+
+
+# Run Sylber
+wav_file = "samples/sample.wav"
+
+outputs = segmenter(wav_file, in_second=True) # in_second can be False to output segments in frame numbers.
+
+# outputs = {"segments": numpy array of [start, end] of segment,
+#            "segment_features": numpy array of segment-averaged features,
+#            "hidden_states": numpy array of raw features used for segmentation.
+```
+
 
 ## Environment
 

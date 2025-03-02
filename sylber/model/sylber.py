@@ -66,6 +66,7 @@ class Segmenter():
         
         Args:
             wav_file: Path to a single wav file or a list of wav file paths
+            in_second: if true, segment boundaries will be in seconds. Otherwise frame indices (at 50Hz).
             
         Returns:
             For single file: Dictionary with segments and segment_features
