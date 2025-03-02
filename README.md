@@ -13,7 +13,7 @@ The model is developed and trained by Berkeley Speech Group.
 1. Distribute inference package
 
 ### 01/22/2025
-1. Sylber is accepted in ICLR 2025!
+1. Sylber is accepted at ICLR 2025!
 
 ### 12/25/2024
 1. Initial code release with training and inference pipelines.
