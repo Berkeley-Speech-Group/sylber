@@ -60,33 +60,40 @@ class Segmenter():
         self.norm_threshold = norm_threshold
         self.merge_threshold=merge_threshold
 
-    def __call__(self, wav_file, in_second=True):
+    def __call__(self, wav_file=None, wav=None, in_second=True):
         """
         Process single wav file or a list of wav files through the model
         
         Args:
             wav_file: Path to a single wav file or a list of wav file paths
+            wavs: 
             in_second: if true, segment boundaries will be in seconds. Otherwise frame indices (at 50Hz).
             
         Returns:
             For single file: Dictionary with segments and segment_features
             For multiple files: List of dictionaries, each with segments and segment_features
         """
-        is_batch = isinstance(wav_file, list)
-        wav_files = wav_file if is_batch else [wav_file]
-        
         # Load and preprocess all wav files
         batch_wavs = []
+        
+        if wav_file is not None:
+            is_batch = isinstance(wav_file, list)
+            wav_files = wav_file if is_batch else [wav_file]
+            for file in wav_files:
+                wav, sr = torchaudio.load(file)
+                if sr != 16000:
+                    wav = torchaudio.transforms.Resample(sr, 16000)(wav)
+                wav = (wav - wav.mean()) / wav.std()
+                batch_wavs.append(wav)
+        else:
+            assert wav != None
+            is_batch = isinstance(wav, list)
+            batch_wavs = wav if is_batch else [wav]
+        
         orig_lengths = []
         max_length = 0
-        
-        for file in wav_files:
-            wav, sr = torchaudio.load(file)
-            if sr != 16000:
-                wav = torchaudio.transforms.Resample(sr, 16000)(wav)
-            wav = (wav - wav.mean()) / wav.std()
+        for wav in batch_wavs:
             orig_lengths.append(wav.shape[1])
-            batch_wavs.append(wav)
             max_length = max(max_length, wav.shape[1])
         
         # Pad wavs to the same size
