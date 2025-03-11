@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='sylber',  
-    version='0.1.1',
+    version='0.1.2',
     author='Cheol Jun Cho, Nicholas Lee, Akshat Gupta, Dhruv Agarwal, Ethan Chen, Alan Black, Gopala Anumanchipalli',
     author_email='cheoljun@berkeley.edu',
     description='Python code for "Sylber: Syllabic Embedding Representation of Speech from Raw Audio"',
