@@ -1,5 +1,5 @@
 from sylber.dataset.collective_audio_segment import SpeechDataModule
-from sylber.model.sylber import SylberTrainer
+from sylber.model.sylber_trainer import SylberTrainer
 import lightning as pl
 from lightning.pytorch.callbacks import LearningRateMonitor, ModelCheckpoint
 import hydra
